@@ -7,7 +7,7 @@
 #include <depth_image_proc/depth_traits.h>
 #include <topic_compression/CompressedDepthImage.h>
 #include <topic_compression/CompressedImage.h>
-#include <topic_compression/EmptyImage.h>
+#include <topic_compression/CompressionMeta.h>
 #include "rvl.h"
 
 ros::Publisher publisher;
@@ -48,6 +48,7 @@ void image_to_compressed_depth(const sensor_msgs::ImageConstPtr &depth_msg) {
     rvl_msg.meta.encoding = depth_msg->encoding;
     rvl_msg.meta.is_bigendian = depth_msg->is_bigendian;
     rvl_msg.meta.step = depth_msg->step;
+    rvl_msg.meta.algorithm = "RVL (2017) from https://github.com/RaymondKirk/topic_compression";
 
     rvl_msg.data.data.clear();
 
@@ -99,6 +100,7 @@ void image_to_compressed_colour(const sensor_msgs::Image::ConstPtr &image) {
     compressed.meta.encoding = image->encoding;
     compressed.meta.is_bigendian = image->is_bigendian;
     compressed.meta.step = image->step;
+    compressed.meta.algorithm = "JPEG (opencv) from https://github.com/RaymondKirk/topic_compression";
 
     compressed.data.header = image->header;
     compressed.data.format = image->encoding;
@@ -183,6 +185,3 @@ int main(int argc, char **argv) {
 
     return 0;
 }
-
-
-

@@ -9,5 +9,5 @@ std_msgs/Header header
 sensor_msgs/CompressedImage data
 
 # Original meta from the original image
-EmptyImage meta
+CompressionMeta meta
 

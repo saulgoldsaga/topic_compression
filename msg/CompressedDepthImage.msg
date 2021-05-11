@@ -9,5 +9,5 @@ std_msgs/Header header
 std_msgs/ByteMultiArray data
 
 # Original meta from the original image
-EmptyImage meta
+CompressionMeta meta
 

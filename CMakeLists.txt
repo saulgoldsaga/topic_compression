@@ -33,7 +33,7 @@ add_message_files(
         FILES
         CompressedDepthImage.msg
         CompressedImage.msg
-        EmptyImage.msg
+        CompressionMeta.msg
 )
 
 

@@ -12,7 +12,6 @@
 
 ros::Publisher publisher;
 
-
 void not_yet_implemented(const std::string& what) {
     throw ros::Exception("Not Yet Implemented: " + what);
 }
@@ -90,6 +89,40 @@ void compressed_depth_to_image(const topic_compression::CompressedDepthImage::Co
     free(dataMat);
 }
 
+void image_to_compressed_colour(const sensor_msgs::Image::ConstPtr &image) {
+    topic_compression::CompressedImage compressed;
+    compressed.header = std_msgs::Header();
+
+    compressed.meta.header = image->header;
+    compressed.meta.height = image->height;
+    compressed.meta.width = image->width;
+    compressed.meta.encoding = image->encoding;
+    compressed.meta.is_bigendian = image->is_bigendian;
+    compressed.meta.step = image->step;
+
+    compressed.data.header = image->header;
+    compressed.data.format = image->encoding;
+
+    cv_bridge::CvImagePtr cv_ptr = cv_bridge::toCvCopy(image, "rgb8");
+    if(!cv::imencode(".jpg", cv_ptr->image, compressed.data.data))
+        ROS_ERROR_STREAM("Failed to compress colour image with JPEG compression");
+    publisher.publish(compressed);
+}
+
+void compressed_colour_to_image(const topic_compression::CompressedImage::ConstPtr &image) {
+    cv_bridge::CvImagePtr cv_ptr(new cv_bridge::CvImage);
+    cv_ptr->header = image->meta.header;
+    cv_ptr->image = cv::imdecode(cv::Mat(image->data.data), CV_LOAD_IMAGE_UNCHANGED);
+
+    cv_ptr->encoding = image->meta.encoding;
+    if (image->meta.encoding == "bgr8") {  // ensure original format is preserved
+        cv::cvtColor(cv_ptr->image, cv_ptr->image, CV_RGB2BGR);
+    }
+
+    auto decompressed = cv_ptr->toImageMsg();
+    publisher.publish(decompressed);
+}
+
 int main(int argc, char **argv) {
     ros::init(argc, argv, "topic_compression", ros::init_options::AnonymousName);
     ros::NodeHandle nh;
@@ -104,10 +137,8 @@ int main(int argc, char **argv) {
     if (in_topic[in_topic.length()] != '/')
         in_topic += '/';
 
-    std::cout << "IN: " << in_topic << std::endl;
-    std::cout << "OUT: " << out_topic << std::endl;
-
     ros::master::TopicInfo info = get_topic_info(in_topic);
+
     // TODO: Format this similar to image_transport with clear in and out transports for pub/subs
     // TODO: This is horrible make this dynamic
     if(info.datatype == "sensor_msgs/Image") {
@@ -122,6 +153,10 @@ int main(int argc, char **argv) {
             ros::spin();
         } else if (std::string("rgb8bgr88UC3").find(msg_ptr->encoding) != std::string::npos) {
             ROS_INFO_STREAM("Compressing colour from '" << in_topic << "' to '" << out_topic << "'");
+            publisher = nh.advertise<topic_compression::CompressedImage>(out_topic, 30);
+            image_transport::ImageTransport it(nh);
+            image_transport::Subscriber subscriber = it.subscribe(in_topic, 1, image_to_compressed_colour);
+            ros::spin();
             not_yet_implemented("Colour Compression");
         } else {
             ROS_ERROR_STREAM("Compressing encoding '" << msg_ptr->encoding << "' not currently supported.");
@@ -131,7 +166,9 @@ int main(int argc, char **argv) {
         if (out_topic.empty() || out_topic == "/out")
             out_topic = in_topic + "decompressed";
         ROS_INFO_STREAM("Decompressing colour from '" << in_topic << "' to '" << out_topic << "'");
-        not_yet_implemented("Colour Decompression");
+        publisher = nh.advertise<sensor_msgs::Image>(out_topic, 30);
+        ros::Subscriber subscriber = nh.subscribe<topic_compression::CompressedImage>(in_topic, 1, compressed_colour_to_image);
+        ros::spin();
     } else if (info.datatype == "topic_compression/CompressedDepthImage") {
         if (out_topic.empty() || out_topic == "/out")
             out_topic = in_topic + "decompressed";
@@ -143,8 +180,7 @@ int main(int argc, char **argv) {
         ROS_ERROR_STREAM("No valid compression/decompression for message of type '" << info.datatype << "'");
         return -1;
     }
-//    ros::Subscriber subscriber = nh.subscribe<>()
-//    publisher = nh.advertise<topic_compression::CompressedDepthImage>(out_topic, 30);
+
     return 0;
 }
 

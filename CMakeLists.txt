@@ -13,10 +13,9 @@ find_package(catkin REQUIRED COMPONENTS
         genmsg
         std_msgs
         sensor_msgs
-        image_transport
-        depth_image_proc
-        cv_bridge
         message_generation
+        cv_bridge
+        image_transport
 )
 
 # ==============================================
@@ -47,7 +46,7 @@ generate_messages(
 # ==============================================
 # Setup
 # ==============================================
-catkin_package(CATKIN_DEPENDS std_msgs message_runtime cv_bridge)
+catkin_package(CATKIN_DEPENDS std_msgs sensor_msgs message_runtime cv_bridge)
 
 include_directories(
         ${catkin_INCLUDE_DIRS}
@@ -55,5 +54,6 @@ include_directories(
         include/
 )
 
-add_executable(run src/bidirectional.cpp include/rvl.h)
+set(HEADER_FILES include/rvl.hpp)
+add_executable(run src/bidirectional.cpp ${HEADER_FILES})
 target_link_libraries(run ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})

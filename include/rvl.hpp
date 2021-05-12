@@ -1,5 +1,5 @@
-#ifndef TOPIC_COMPRESSION_RVL_H
-#define TOPIC_COMPRESSION_RVL_H
+#ifndef TOPIC_COMPRESSION_RVL_HPP
+#define TOPIC_COMPRESSION_RVL_HPP
 
 // This algorithm is from (MIT)
 // Wilson, A. D. (2017, October). Fast lossless depth image compression.
@@ -92,4 +92,4 @@ void DecompressRVL(char* input, uint16_t* output, int numPixels)
         }
     }
 }
-#endif //TOPIC_COMPRESSION_RVL_H
+#endif //TOPIC_COMPRESSION_RVL_HPP

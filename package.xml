@@ -25,7 +25,6 @@
   <build_depend>sensor_msgs</build_depend>
   <build_depend>cv_bridge</build_depend>
   <build_depend>image_transport</build_depend>
-  <build_depend>image_pipeline</build_depend>
   <build_depend>message_generation</build_depend>
 
   <!-- Core dependencies -->
@@ -36,5 +35,4 @@
   <exec_depend>message_runtime</exec_depend>
   <exec_depend>cv_bridge</exec_depend>
   <exec_depend>image_transport</exec_depend>
-  <exec_depend>image_pipeline</exec_depend>
 </package>

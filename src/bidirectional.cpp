@@ -1,14 +1,13 @@
+#include <cv.hpp>
+
 #include <ros/ros.h>
-#include <image_transport/image_transport.h>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
 #include <cv_bridge/cv_bridge.h>
-#include <iostream>
-#include <depth_image_proc/depth_traits.h>
-#include <topic_compression/CompressedDepthImage.h>
-#include <topic_compression/CompressedImage.h>
+#include <image_transport/image_transport.h>
+
+#include "rvl.hpp"
 #include <topic_compression/CompressionMeta.h>
-#include "rvl.h"
+#include <topic_compression/CompressedImage.h>
+#include <topic_compression/CompressedDepthImage.h>
 
 ros::Publisher publisher;
 

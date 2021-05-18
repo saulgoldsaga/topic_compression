@@ -56,4 +56,5 @@ include_directories(
 
 set(HEADER_FILES include/rvl.hpp)
 add_executable(run src/bidirectional.cpp ${HEADER_FILES})
+add_dependencies(run topic_compression_generate_messages_cpp)
 target_link_libraries(run ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})

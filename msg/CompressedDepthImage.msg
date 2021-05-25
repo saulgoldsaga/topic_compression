@@ -6,7 +6,7 @@
 std_msgs/Header header
 
 # Compressed data
-std_msgs/ByteMultiArray data
+uint8[] data
 
 # Original meta from the original image
 CompressionMeta meta

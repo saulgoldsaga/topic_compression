@@ -1,4 +1,5 @@
 #include <cv.hpp>
+#include <chrono>
 
 #include <ros/ros.h>
 #include <cv_bridge/cv_bridge.h>
@@ -10,6 +11,11 @@
 #include <topic_compression/CompressedDepthImage.h>
 
 ros::Publisher publisher;
+using std::chrono::high_resolution_clock;
+using std::chrono::milliseconds;
+using std::chrono::duration;
+auto t1 = high_resolution_clock::now();
+auto t2 = high_resolution_clock::now();
 
 void not_yet_implemented(const std::string& what) {
     throw ros::Exception("Not Yet Implemented: " + what);
@@ -49,14 +55,19 @@ void image_to_compressed_depth(const sensor_msgs::ImageConstPtr &depth_msg) {
     rvl_msg.meta.step = depth_msg->step;
     rvl_msg.meta.algorithm = "RVL (2017) from https://github.com/RaymondKirk/topic_compression";
 
-    rvl_msg.data.data.clear();
+    rvl_msg.data.clear();
 
     for (int i = 0; i < n; i++) {
-        rvl_msg.data.data.push_back(output[i]);
+        rvl_msg.data.push_back(output[i]);
     }
 
     publisher.publish(rvl_msg);
 
+    t2 = high_resolution_clock::now();
+    duration<double, std::milli> ms_double = t2 - t1;
+    auto hz = (1.0 / ms_double.count()) * 1000;
+    t1 = high_resolution_clock::now();
+    ROS_DEBUG_STREAM("Compression rate from depth to RVL depth @ " << hz << "hz");
     free(output);
 }
 
@@ -69,7 +80,7 @@ void compressed_depth_to_image(const topic_compression::CompressedDepthImage::Co
     char* dataMat = (char *) malloc(V * U * sizeof(uint16_t));
 
     int i = 0;
-    for (signed char it : cmp_msg->data.data) {
+    for (signed char it : cmp_msg->data) {
         dataMat[i] = it;
         i++;
     }
@@ -83,7 +94,14 @@ void compressed_depth_to_image(const topic_compression::CompressedDepthImage::Co
     cv_depth_ptr->header = cmp_msg->meta.header;
     cv_depth_ptr->image = image;
 
-    publisher.publish(cv_depth_ptr->toImageMsg());
+    auto img_msg = cv_depth_ptr->toImageMsg();
+    publisher.publish(img_msg);
+
+    t2 = high_resolution_clock::now();
+    duration<double, std::milli> ms_double = t2 - t1;
+    auto hz = (1.0 / ms_double.count()) * 1000;
+    t1 = high_resolution_clock::now();
+    ROS_DEBUG_STREAM("Decompression rate from RVL to depth @ " << hz << "hz");
 
     free(output);
     free(dataMat);
@@ -108,6 +126,12 @@ void image_to_compressed_colour(const sensor_msgs::Image::ConstPtr &image) {
     if(!cv::imencode(".jpg", cv_ptr->image, compressed.data.data))
         ROS_ERROR_STREAM("Failed to compress colour image with JPEG compression");
     publisher.publish(compressed);
+
+    t2 = high_resolution_clock::now();
+    duration<double, std::milli> ms_double = t2 - t1;
+    auto hz = (1.0 / ms_double.count()) * 1000;
+    t1 = high_resolution_clock::now();
+    ROS_DEBUG_STREAM("Compression rate from RGB to JPEG RGB @ " << hz << "hz");
 }
 
 void compressed_colour_to_image(const topic_compression::CompressedImage::ConstPtr &image) {
@@ -122,6 +146,12 @@ void compressed_colour_to_image(const topic_compression::CompressedImage::ConstP
 
     auto decompressed = cv_ptr->toImageMsg();
     publisher.publish(decompressed);
+
+    t2 = high_resolution_clock::now();
+    duration<double, std::milli> ms_double = t2 - t1;
+    auto hz = (1.0 / ms_double.count()) * 1000;
+    t1 = high_resolution_clock::now();
+    ROS_DEBUG_STREAM("Decompression rate from JPEG RGB to RGB @ " << hz << "hz");
 }
 
 int main(int argc, char **argv) {

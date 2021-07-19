@@ -16,6 +16,7 @@ find_package(catkin REQUIRED COMPONENTS
         message_generation
         cv_bridge
         image_transport
+        pybind11_catkin
 )
 
 # ==============================================
@@ -46,13 +47,15 @@ generate_messages(
 # ==============================================
 # Setup
 # ==============================================
-catkin_package(CATKIN_DEPENDS std_msgs sensor_msgs message_runtime cv_bridge)
+catkin_package(CATKIN_DEPENDS std_msgs sensor_msgs message_runtime cv_bridge pybind11_catkin)
 
 include_directories(
         ${catkin_INCLUDE_DIRS}
         ${OpenCV_INCLUDE_DIRS}
         include/
 )
+
+pybind_add_module(topic_compression_lib MODULE src/python_wrapper.cpp)
 
 set(HEADER_FILES include/rvl.hpp)
 add_executable(run src/bidirectional.cpp ${HEADER_FILES})

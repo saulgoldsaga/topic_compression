@@ -25,3 +25,20 @@ rosrun topic_compression run in:="/camera/depth/image_raw" out:="/camera/depth/c
 # To decompress it's the same syntax
 rosrun topic_compression run in:="/camera/depth/compressed" out:="/camera/depth/image_raw_1"
 ```
+
+### Python Wrapper
+
+If you're using python you can use the wrapper to decompress your image data/
+
+```python
+from topic_compression.msg import CompressedDepthImage, CompressedImage
+from topic_compression_lib import compress_image, decompress_image, compress_depth, decompress_depth
+
+# Your compressed data
+compressed_image = CompressedImage(...)
+compressed_depth = CompressedDepthImage(...)
+
+# Decompress in python (library is built with catkin build)
+decompressed_image = decompress_image(compressed_image)
+decompressed_depth_image = decompress_depth(compressed_depth)
+```

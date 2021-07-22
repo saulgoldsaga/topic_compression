@@ -27,8 +27,7 @@
 
 using namespace pybind11::literals;
 
-bool is_ros_node
-= false;
+bool is_ros_node = false;
 ros::Publisher publisher;
 using std::chrono::high_resolution_clock;
 using std::chrono::milliseconds;

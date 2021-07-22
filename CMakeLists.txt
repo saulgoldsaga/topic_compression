@@ -59,7 +59,8 @@ include_directories(
 set(HEADER_FILES include/rvl.hpp)
 add_executable(run src/bidirectional.cpp ${HEADER_FILES})
 add_dependencies(run topic_compression_generate_messages_cpp ${catkin_EXPORTED_TARGETS})
+target_link_libraries(run ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+
 
 pybind_add_module(topic_compression_lib MODULE src/python_wrapper.cpp)
-
-target_link_libraries(run ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+add_dependencies(topic_compression_lib topic_compression_generate_messages_cpp ${catkin_EXPORTED_TARGETS})

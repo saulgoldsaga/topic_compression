@@ -88,9 +88,7 @@ topic_compression::CompressedDepthImage image_to_compressed_depth(const sensor_m
         ROS_DEBUG_STREAM("Compression rate from depth to RVL depth @ " << hz << "hz");
     }
 
-    std::cout << "BEFORE FREE" << std::endl;
     free(output);
-    std::cout << "AFTER FREE" << std::endl;
     return rvl_msg;
 }
 

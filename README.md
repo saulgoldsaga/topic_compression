@@ -28,7 +28,7 @@ rosrun topic_compression run in:="/camera/depth/compressed" out:="/camera/depth/
 
 ### Python Wrapper
 
-If you're using python you can use the wrapper to decompress your image data/
+Decompress your image data in Python.
 
 ```python
 from topic_compression.msg import CompressedDepthImage, CompressedImage

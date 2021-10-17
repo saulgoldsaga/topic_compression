@@ -2,8 +2,8 @@
 Changelog for package topic_compression
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.2 (2021-10-17)
+------------------
 * added install targets and very basic test
 * add .gitignore
 * Added clearer Python instructions in README.md

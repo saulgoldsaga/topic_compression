@@ -1,4 +1,4 @@
-#include <cv.hpp>
+#include <opencv2/opencv.hpp>
 #include <chrono>
 
 #include <ros/ros.h>
@@ -165,7 +165,7 @@ topic_compression::CompressedImage image_to_compressed_colour(const sensor_msgs:
 sensor_msgs::Image compressed_colour_to_image(const topic_compression::CompressedImage::ConstPtr &image) {
     cv_bridge::CvImagePtr cv_ptr(new cv_bridge::CvImage);
     cv_ptr->header = image->meta.header;
-    cv_ptr->image = cv::imdecode(cv::Mat(image->data.data), CV_LOAD_IMAGE_UNCHANGED);
+    cv_ptr->image = cv::imdecode(cv::Mat(image->data.data), cv::IMREAD_UNCHANGED);
 
     cv_ptr->encoding = image->meta.encoding;
     if (image->meta.encoding == "bgr8") {  // ensure original format is preserved
